@@ -5,11 +5,8 @@ import { connect } from "react-redux";
 import MaterialTable from "material-table";
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import MaxDialog from './MaxDialog';
+
 
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -48,7 +45,7 @@ const tableIcons = {
 };
 function App({getTableData, tabledata}){
 
-  let rows = 10;
+  let rowsPerPage = 10;
 
     useEffect(() => {
       getTableData();
@@ -60,7 +57,7 @@ function App({getTableData, tabledata}){
 
     const handleClickOpen = (fieldName,data) => {
       setModalData(data);
-      setModalHeading(fieldName);
+      // setModalHeading(fieldName);
       setOpen(true);
     };
   
@@ -71,7 +68,7 @@ function App({getTableData, tabledata}){
     const [data,setData]=useState([]);
     const [open, setOpen] = React.useState(false);
     const [modalData, setModalData] = React.useState([]);
-    const [modalHeading, setModalHeading] = React.useState('');
+    // const [modalHeading, setModalHeading] = React.useState('');
 
       const [columns, setColumns] = useState([
         { title: 'Name', field: 'name' },
@@ -99,21 +96,29 @@ function App({getTableData, tabledata}){
         <MaterialTable
           title="TrialX Task / Editable Table"
           columns={columns}
-          localization={{
-            header: {
-                actions: false
-            },
-          }}
+          // localization={{
+          //   header: {
+          //       actions: false
+          //   },
+          //   pagination: {
+          //     labelDisplayedRows: '1 of 10',
+          //     labelRowsPerPage:'{10, 25,100}',
+          //     labelRowsPerPage: "10",
+          //   },
+          // }}
           icons={tableIcons}
           data={data ? data : []}
           options={{
             search: false,
-            pageSize:rows,       // make initial page size
+            pageSize: rowsPerPage,
+            paging: true,
+            actionsColumnIndex: -1
           }}
           editable={{
-            onBulkUpdate: changes =>
+            onBulkUpdate: (newData, oldData) =>
               new Promise((resolve, reject) => {
                 setTimeout(() => {
+                  // console.log(newData,oldData);
                   // setData([...data, newData]); 
                   resolve();
                 }, 1000);
@@ -123,41 +128,35 @@ function App({getTableData, tabledata}){
             //     setTimeout(() => {
             //       resolve();
             //     }, 1000);
-            //   }),     
-          }}
-          options={{
-            actionsColumnIndex: -1
+            //   }),    
+            onRowUpdate: (newData, oldData) =>
+            new Promise((resolve, reject) => {
+              setTimeout(() => {
+                const dataUpdate = [...data];
+                const index = oldData.tableData.id;
+                dataUpdate[index] = newData;
+                setData([...dataUpdate]);
+
+                resolve();
+              }, 1000)
+            }), 
           }}
         />
         </Grid>
         </Grid>
 
-        <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title"><b>{modalHeading}</b></DialogTitle>
-        <DialogContent>
-          {/* <DialogContentText id="alert-dialog-description"> */}
-            {modalData && modalData.length>0 ? (modalData.map((x,key)=>{
-              return (<p key={key}>{x}</p>)
-            })): <p>No <b>{modalHeading}</b> Found for current record</p>}
-          {/* </DialogContentText> */}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-      </>
+        <MaxDialog
+          openDialog={open}
+          closeDialog={handleClose}
+          data={modalData}
+      />
+        </>
+       
+      
       )
 }
 
 const mapStateToProps = (state) => {
-  console.log(state.table)
       return {  
         tabledata: state.table !== null ? state.table.results : null
     };

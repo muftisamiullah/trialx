@@ -7,3 +7,20 @@ export  async function getTableData() {
     } catch (error) {
     }
   }
+
+export  async function getModalData(urls) {
+  // console.log(urls);
+  try {
+    var response = await Promise.all(
+        urls.map(
+            url =>
+                fetch(url).then(
+                    (response) => response.json()
+                )));
+
+    return (response)
+  } catch (error) {
+      // console.log(error)
+      throw (error)
+  }
+}
