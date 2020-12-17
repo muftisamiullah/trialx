@@ -55,6 +55,8 @@ function App({getTableData, tabledata}){
       setData(tabledata)
     }, [tabledata]);
 
+
+
     const handleClickOpen = (fieldName,data) => {
       setModalData(data);
       // setModalHeading(fieldName);
@@ -92,7 +94,7 @@ function App({getTableData, tabledata}){
       return (
         <>
         <Grid container justify="center" alignItems="center">
-        <Grid item xs={10}>
+        <Grid item xs={10}>{console.log("Dasdasdasd")}
         <MaterialTable
           title="TrialX Task / Editable Table"
           columns={columns}
@@ -116,24 +118,16 @@ function App({getTableData, tabledata}){
           }}
           editable={{
             onBulkUpdate: (rows) =>
-            
               new Promise((resolve, reject) => {
                 setTimeout(() => {
                   let array = data;
-                  array.map( (option,key)=>{
-                    if(rows[key] !== undefined){
-                      let newdatas = rows[key].newData;
-                      // let arrayIndex = array[key];
-                      console.log(option,key)
-                      // console.log(array[key], rows[key].oldData );console.log({...array, arrayIndex: newdata})
-                      // return (array[key].name == rows[key].oldData.name ? option=newdatas: {...array});
+                  array && array.map((option, key)=>{
+                    if(rows[key] != undefined){
+                      array[key]= rows[key].newData;
                     }
                   })
-                  console.log(array);
-                  setData(array);
-                  // setData([rows[0].newData]); 
-
-                  // setData([rows[0].newData]); 
+                  setData([...array]);
+                  console.log(data)
                   resolve();
                 }, 1000);
               }),     
@@ -150,7 +144,6 @@ function App({getTableData, tabledata}){
                 const index = oldData.tableData.id;
                 dataUpdate[index] = newData;
                 setData([...dataUpdate]);
-
                 resolve();
               }, 1000)
             }), 
@@ -163,10 +156,8 @@ function App({getTableData, tabledata}){
           openDialog={open}
           closeDialog={handleClose}
           data={modalData}
-      />
+        />
         </>
-       
-      
       )
 }
 
