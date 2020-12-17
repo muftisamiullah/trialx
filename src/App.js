@@ -65,7 +65,7 @@ function App({getTableData, tabledata}){
       setOpen(false);
     };
 
-    const [data,setData]=useState([]);
+    const [data, setData]=useState([]);
     const [open, setOpen] = React.useState(false);
     const [modalData, setModalData] = React.useState([]);
     // const [modalHeading, setModalHeading] = React.useState('');
@@ -115,11 +115,25 @@ function App({getTableData, tabledata}){
             actionsColumnIndex: -1
           }}
           editable={{
-            onBulkUpdate: (newData, oldData) =>
+            onBulkUpdate: (rows) =>
+            
               new Promise((resolve, reject) => {
                 setTimeout(() => {
-                  // console.log(newData,oldData);
-                  // setData([...data, newData]); 
+                  let array = data;
+                  array.map( (option,key)=>{
+                    if(rows[key] !== undefined){
+                      let newdatas = rows[key].newData;
+                      // let arrayIndex = array[key];
+                      console.log(option,key)
+                      // console.log(array[key], rows[key].oldData );console.log({...array, arrayIndex: newdata})
+                      // return (array[key].name == rows[key].oldData.name ? option=newdatas: {...array});
+                    }
+                  })
+                  console.log(array);
+                  setData(array);
+                  // setData([rows[0].newData]); 
+
+                  // setData([rows[0].newData]); 
                   resolve();
                 }, 1000);
               }),     
